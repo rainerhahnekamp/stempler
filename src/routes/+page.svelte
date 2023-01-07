@@ -1,5 +1,5 @@
 <script>
-	import Counter from '../components/Counter.svelte';
+	import Counter from '../components/counter.svelte';
 	import { formatDate } from '../date/format-date.ts';
 	import { formatDuration } from '../date/format-duration.ts';
 	export let data;
