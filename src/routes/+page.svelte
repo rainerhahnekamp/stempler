@@ -1,21 +1,32 @@
 <script>
 	import Counter from '../components/Counter.svelte';
-	let measurements = [];
-	const saveMeasurement = (event) => {
-		console.log(event.detail);
-		measurements = [...measurements, event.detail];
+	import { formatDate } from '../date/format-date.ts';
+	import { formatDuration } from '../date/format-duration.ts';
+	export let data;
+	let measurements = data.measurements;
+	const saveMeasurement = async (event) => {
+		await fetch('/api/measurement', { method: 'POST', body: JSON.stringify(event.detail) });
+		measurements = [...measurements, event.detail].sort((m1, m2) => m2.startedAt - m1.startedAt);
 	};
 </script>
 
-<h1>Stempler</h1>
 <Counter on:measured={saveMeasurement} />
 
-<h2>Measurements</h2>
-{#each measurements as measurement}
-	<div style="display: flex">
-		<p>{measurement.name}</p>
-		<p>{measurement.tags}</p>
-		<p>{measurement.startedAt}</p>
-		<p>{measurement.endedAt}</p>
+{#if measurements.length}
+	<h2 class="text-2xl font-bold mt-4 mb-2">Measurements</h2>
+
+	<div class="grid grid-cols-5">
+		<p class="font-bold">Name</p>
+		<p class="font-bold">Tags</p>
+		<p class="font-bold">Start</p>
+		<p class="font-bold">End</p>
+		<p class="font-bold">Duration</p>
+		{#each measurements as measurement}
+			<p>{measurement.name}</p>
+			<p>{measurement.tags}</p>
+			<p>{formatDate(measurement.startedAt)}</p>
+			<p>{formatDate(measurement.endedAt)}</p>
+			<p>{formatDuration(measurement.startedAt, measurement.endedAt)}</p>
+		{/each}
 	</div>
-{/each}
+{/if}

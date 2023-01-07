@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .menu {
+        @apply md:flex text-gray-700 text-base mr-3 origin-top z-10
+    }
+    .mobile-menu-visible {
+        @apply block absolute top-14 border-b bg-white w-full p-2
+    }
+    .mobile-menu-hidden {
+        @apply md:flex text-gray-700 text-base mr-3 origin-top z-10 hidden
+    }
+
+    .menu-item {
+        @apply px-3 cursor-pointer hover:bg-purple-50 flex items-center hover:text-gray-800
+    }
+
+    .button {
+        @apply p-2 rounded text-white border-gray-700 mx-1
+    }
+
+    .button-green {
+        @apply button bg-green-500 hover:bg-green-600
+    }
+
+    .button-red {
+        @apply button bg-red-500 hover:bg-red-600
+    }
+
+
+}

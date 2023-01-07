@@ -1,5 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
+	import { formatDuration } from '../date/format-duration.ts';
 
 	let status = 'stopped';
 	let startedAt;
@@ -28,11 +29,7 @@
 
 	$: {
 		if (startedAt && now) {
-			const elapsed = Math.floor((now - startedAt) / 1000);
-			const hours = Math.floor(elapsed / 3600);
-			const minutes = Math.floor((elapsed % 3600) / 60);
-			const seconds = Math.floor(elapsed % 60);
-			timer = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+			timer = formatDuration(startedAt, now);
 		}
 	}
 
@@ -40,12 +37,26 @@
 </script>
 
 {#if status === 'stopped'}
-	<button on:click={start}>Start</button>
+	<button class="button-green" on:click={start}>Start</button>
 {:else}
 	<p>{timer}</p>
 	<form>
-		<input name="name" placeholder="name" bind:value={name} autofocus />
-		<input name="tags" placeholder="tags" bind:value={tags} />
+		<div class="flex">
+			<input
+				class="border border-gray-300 focus:outline-blue-400 rounded w-full h-8 p-3 text-sm"
+				name="name"
+				placeholder="name"
+				bind:value={name}
+				autofocus
+			/>
+			<input
+				class="border border-gray-300 focus:outline-blue-400 rounded w-full h-8 p-3 text-sm"
+				name="tags"
+				placeholder="tags"
+				bind:value={tags}
+			/>
+
+			<button class="button-red" on:click={stop}>Stop</button>
+		</div>
 	</form>
-	<button on:click={stop}>Stop</button>
 {/if}
