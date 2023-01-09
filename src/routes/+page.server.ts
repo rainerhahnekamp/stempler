@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client/edge';
 import type { PageServerLoad } from '../../.svelte-kit/types/src/routes/$types';
+import { DATABASE_URL } from '$env/static/private';
 
-export const load: PageServerLoad = async (context: any) => {
+export const load: PageServerLoad = async (context) => {
 	try {
 		console.log(context);
-		const { env } = context;
-		console.log(env.DATABASE_URL);
+		console.log(DATABASE_URL);
 		const client = new PrismaClient();
 		const dbMeasurements = await client.measurement.findMany();
 
