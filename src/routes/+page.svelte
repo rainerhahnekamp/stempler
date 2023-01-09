@@ -3,6 +3,9 @@
 	import { formatDate } from '../date/format-date.ts';
 	import { formatDuration } from '../date/format-duration.ts';
 	export let data;
+	if (!data) {
+		throw new Error('data is not initialised');
+	}
 	let measurements = data.measurements;
 
 	const saveMeasurement = async (event) => {

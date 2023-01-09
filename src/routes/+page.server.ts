@@ -3,6 +3,7 @@ import type { PageServerLoad } from '../../.svelte-kit/types/src/routes/$types';
 
 export const load: PageServerLoad = async () => {
 	try {
+		console.log(process.env.DATABASE_URL);
 		const client = new PrismaClient();
 		const dbMeasurements = await client.measurement.findMany();
 
