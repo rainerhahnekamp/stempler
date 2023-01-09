@@ -32,8 +32,6 @@
 	</div>
 {/if}
 
-<p>Database URL: {data.debug}</p>
-
 {#if data.error}
 	<div class="bg-red-500 text-white rounded p-4 mt-4">
 		<p>{data.error.name}</p>

@@ -15,17 +15,14 @@ export const load: PageServerLoad = async () => {
 
 		return {
 			successful: true,
-			measurements: returner,
-			debug: process?.env?.DATABASE_URL
+			measurements: returner
 		};
 	} catch (error: unknown) {
 		if (error instanceof Error) {
-			console.error(error);
 			return {
 				successful: false,
 				measurements: [],
-				error: { name: error.name, message: error.message },
-				debug: process?.env?.DATABASE_URL
+				error: { name: error.name, message: error.message }
 			};
 		}
 	}
