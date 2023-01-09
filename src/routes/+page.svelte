@@ -32,7 +32,7 @@
 	</div>
 {/if}
 
-<p>{data.debug}</p>
+<p>Database URL: {data.debug}</p>
 
 {#if data.error}
 	<div class="bg-red-500 text-white rounded p-4 mt-4">
