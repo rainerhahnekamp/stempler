@@ -16,7 +16,7 @@ export const load: PageServerLoad = async () => {
 		return {
 			successful: true,
 			measurements: returner,
-			debug: process.env.DATABASE_URL
+			debug: process?.env?.DATABASE_URL
 		};
 	} catch (error: unknown) {
 		if (error instanceof Error) {
@@ -25,7 +25,7 @@ export const load: PageServerLoad = async () => {
 				successful: false,
 				measurements: [],
 				error: { name: error.name, message: error.message },
-				debug: process.env.DATABASE_URL
+				debug: process?.env?.DATABASE_URL
 			};
 		}
 	}
