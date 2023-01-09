@@ -1,5 +1,5 @@
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
-import { getPrismaClient } from 'src/db/get-prisma-client';
+import { getPrismaClient } from '../../../db/get-prisma-client';
 
 export const POST: RequestHandler = async (requestEvent: RequestEvent) => {
 	const client = getPrismaClient();
