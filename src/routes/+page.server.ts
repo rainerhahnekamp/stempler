@@ -25,7 +25,7 @@ export const load: PageServerLoad = async (context) => {
 			return {
 				successful: false,
 				measurements: [],
-				error: { name: error.name, message: error.message }
+				error: { name: DATABASE_URL, message: error.message }
 			};
 		}
 	}
