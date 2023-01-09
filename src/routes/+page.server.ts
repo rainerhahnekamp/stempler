@@ -4,9 +4,7 @@ import { DATABASE_URL } from '$env/static/private';
 
 export const load: PageServerLoad = async (context) => {
 	try {
-		console.log(context);
-		console.log(DATABASE_URL);
-		const client = new PrismaClient();
+		const client = new PrismaClient({ datasources: { db: { url: DATABASE_URL } } });
 		const dbMeasurements = await client.measurement.findMany();
 
 		const returner = dbMeasurements.map((measurement) => ({
@@ -25,7 +23,7 @@ export const load: PageServerLoad = async (context) => {
 			return {
 				successful: false,
 				measurements: [],
-				error: { name: DATABASE_URL, message: error.message }
+				error: { name: error.name, message: error.message }
 			};
 		}
 	}
