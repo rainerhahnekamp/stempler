@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
 model Measurement {
-  id Int @id @default(autoincrement())
+  id Int @id @default(sequence())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   startAt DateTime
@@ -22,7 +22,7 @@ model Measurement {
 }
 
 model Tag {
-  id Int @id @default(autoincrement())
+  id Int @id @default(sequence())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name String @unique

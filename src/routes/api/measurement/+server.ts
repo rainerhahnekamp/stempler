@@ -1,5 +1,5 @@
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
-import { PrismaClient } from '@prisma/client/edge';
+import { PrismaClient } from '@prisma/client';
 
 export const POST: RequestHandler = async (requestEvent: RequestEvent) => {
 	const client = new PrismaClient();
