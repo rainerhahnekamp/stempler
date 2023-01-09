@@ -2,17 +2,29 @@ import { PrismaClient } from '@prisma/client/edge';
 import type { PageServerLoad } from '../../.svelte-kit/types/src/routes/$types';
 
 export const load: PageServerLoad = async () => {
-	const client = new PrismaClient();
-	const dbMeasurements = await client.measurement.findMany();
+	try {
+		const client = new PrismaClient();
+		const dbMeasurements = await client.measurement.findMany();
 
-	const returner = dbMeasurements.map((measurement) => ({
-		id: measurement.id,
-		name: measurement.name,
-		startedAt: measurement.startAt,
-		endedAt: measurement.endedAt
-	}));
+		const returner = dbMeasurements.map((measurement) => ({
+			id: measurement.id,
+			name: measurement.name,
+			startedAt: measurement.startAt,
+			endedAt: measurement.endedAt
+		}));
 
-	return {
-		measurements: returner
-	};
+		return {
+			successful: true,
+			measurements: returner
+		};
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error(error);
+			return {
+				successful: false,
+				measurements: [],
+				error: { name: error.name, message: error.message }
+			};
+		}
+	}
 };

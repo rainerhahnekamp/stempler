@@ -4,6 +4,7 @@
 	import { formatDuration } from '../date/format-duration.ts';
 	export let data;
 	let measurements = data.measurements;
+
 	const saveMeasurement = async (event) => {
 		await fetch('/api/measurement', { method: 'POST', body: JSON.stringify(event.detail) });
 		measurements = [...measurements, event.detail].sort((m1, m2) => m2.startedAt - m1.startedAt);
@@ -28,5 +29,12 @@
 			<p>{formatDate(measurement.endedAt)}</p>
 			<p>{formatDuration(measurement.startedAt, measurement.endedAt)}</p>
 		{/each}
+	</div>
+{/if}
+
+{#if data.error}
+	<div class="bg-red-500 text-white rounded p-4 mt-4">
+		<p>{data.error.name}</p>
+		<p>{data.error.message}</p>
 	</div>
 {/if}
