@@ -21,6 +21,10 @@
 	const remove = async (id) => {
 		measurements = [...(await measurementService.remove(id))];
 	};
+
+	const resume = async () => {
+		alert('not yet implemented');
+	};
 </script>
 
 <Counter on:measured={saveMeasurement} />
@@ -41,7 +45,10 @@
 			<p>{formatDate(measurement.start)}</p>
 			<p>{formatDate(measurement.end)}</p>
 			<p>{formatDuration(measurement.start, measurement.end)}</p>
-			<button class="button-red" on:click={() => remove(measurement.id)}>Delete</button>
+			<div>
+				<button class="button-red" on:click={() => remove(measurement.id)}>Delete</button>
+				<button class="button" on:click={() => resume(measurement.id)}>Resume</button>
+			</div>
 		{/each}
 	</div>
 {/if}

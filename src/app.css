@@ -18,8 +18,10 @@
     }
 
     .button {
-        @apply p-2 rounded text-white border-gray-700 mx-1
+        @apply p-2 rounded text-white border-gray-700 mx-1 bg-blue-500 hover:bg-blue-600 border-blue-700
     }
+
+
 
     .button-green {
         @apply button bg-green-500 hover:bg-green-600
