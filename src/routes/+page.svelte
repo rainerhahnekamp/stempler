@@ -2,15 +2,24 @@
 	import Counter from '../components/counter.svelte';
 	import { formatDate } from '../date/format-date.ts';
 	import { formatDuration } from '../date/format-duration.ts';
+	import { MeasurementService } from '../client/measurement-service.ts';
+	import { measurementSchema } from '../client/model/measurement.ts';
 	export let data;
 	if (!data) {
 		throw new Error('data is not initialised');
 	}
 	let measurements = data.measurements;
 
+	const measurementService = new MeasurementService();
+
 	const saveMeasurement = async (event) => {
-		await fetch('/api/measurement', { method: 'POST', body: JSON.stringify(event.detail) });
-		measurements = [...measurements, event.detail].sort((m1, m2) => m2.startedAt - m1.startedAt);
+		const entry = measurementSchema.parse({ id: 0, ...event.detail });
+		const measurement = await measurementService.saveMeasurement(entry);
+		measurements = [...measurements, measurement].sort((m1, m2) => m2.start - m1.start);
+	};
+
+	const remove = async (id) => {
+		measurements = [...(await measurementService.remove(id))];
 	};
 </script>
 
@@ -19,18 +28,20 @@
 {#if measurements.length}
 	<h2 class="text-2xl font-bold mt-4 mb-2">Measurements</h2>
 
-	<div class="grid grid-cols-5">
+	<div class="grid grid-cols-6 gap-y-1 items-center">
 		<p class="font-bold">Name</p>
 		<p class="font-bold">Tags</p>
 		<p class="font-bold">Start</p>
 		<p class="font-bold">End</p>
 		<p class="font-bold">Duration</p>
+		<p class="font-bold">&nbsp;</p>
 		{#each measurements as measurement}
 			<p>{measurement.name}</p>
 			<p>{measurement.tags}</p>
-			<p>{formatDate(measurement.startedAt)}</p>
-			<p>{formatDate(measurement.endedAt)}</p>
-			<p>{formatDuration(measurement.startedAt, measurement.endedAt)}</p>
+			<p>{formatDate(measurement.start)}</p>
+			<p>{formatDate(measurement.end)}</p>
+			<p>{formatDuration(measurement.start, measurement.end)}</p>
+			<button class="button-red" on:click={() => remove(measurement.id)}>Delete</button>
 		{/each}
 	</div>
 {/if}

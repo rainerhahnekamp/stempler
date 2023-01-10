@@ -3,7 +3,7 @@
 	import { formatDuration } from '../date/format-duration.ts';
 
 	let status = 'stopped';
-	let startedAt;
+	let start;
 	let now = undefined;
 	let timer = '';
 
@@ -11,8 +11,8 @@
 	let tags = '';
 	let intervalId = 0;
 
-	const start = () => {
-		startedAt = now = new Date();
+	const run = () => {
+		start = now = new Date();
 		status = 'running';
 		intervalId = setInterval(() => (now = new Date()), 1000);
 	};
@@ -22,14 +22,14 @@
 		dispatch('measured', {
 			name,
 			tags: tags.split(' '),
-			startedAt,
-			endedAt: new Date()
+			start,
+			end: new Date()
 		});
 	};
 
 	$: {
-		if (startedAt && now) {
-			timer = formatDuration(startedAt, now);
+		if (start && now) {
+			timer = formatDuration(start, now);
 		}
 	}
 
@@ -37,7 +37,7 @@
 </script>
 
 {#if status === 'stopped'}
-	<button class="button-green" on:click={start}>Start</button>
+	<button class="button-green" on:click={run}>Start</button>
 {:else}
 	<p>{timer}</p>
 	<form>

@@ -1,17 +1,13 @@
 import type { PageServerLoad } from '../../.svelte-kit/types/src/routes/$types';
-import { getPrismaClient } from '../db/get-prisma-client';
+import { getPrismaClient } from '../server/get-prisma-client';
+import { mapMeasurement } from '../server/map-measurement';
 
 export const load: PageServerLoad = async () => {
 	try {
 		const client = getPrismaClient();
 		const dbMeasurements = await client.measurement.findMany();
 
-		const returner = dbMeasurements.map((measurement) => ({
-			id: measurement.id,
-			name: measurement.name,
-			startedAt: measurement.startAt,
-			endedAt: measurement.endedAt
-		}));
+		const returner = dbMeasurements.map(mapMeasurement);
 
 		return {
 			successful: true,
