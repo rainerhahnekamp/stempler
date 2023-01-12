@@ -1,15 +1,25 @@
 <script>
 	import '../app.css';
+	import { logout, login, username } from '../auth/auth-service.ts';
 
 	let showMenu = false;
 
-	const menuItems = [
+	let menuItems = [
 		{ label: 'Home', link: '/' },
 		{ label: 'Tags', link: '/tags' },
 		{ label: 'Reports', link: '/reports' },
 		{ label: 'Impressum', link: '/impressum' },
-		{ label: 'Feedback', link: '/feedback' }
+		{ label: 'Feedback', link: '/feedback' },
+		{ label: '' }
 	];
+
+	$: {
+		if ($username) {
+			menuItems = [...menuItems.slice(0, -1), { label: `Logout ${$username}`, callback: logout }];
+		} else {
+			menuItems = [...menuItems.slice(0, -1), { label: `Login`, callback: login }];
+		}
+	}
 </script>
 
 <nav class="border-b">
@@ -43,7 +53,12 @@
 		<ul class={showMenu ? 'menu mobile-menu-visible' : 'menu mobile-menu-hidden'} id="navbar-main">
 			{#each menuItems as menuItem}
 				<li class={showMenu ? 'menu-item py-1' : 'menu-item'}>
-					<a href={menuItem.link}>{menuItem.label}</a>
+					{#if menuItem.link}
+						<a href={menuItem.link}>{menuItem.label}</a>
+					{/if}
+					{#if menuItem.callback}
+						<button on:click={menuItem.callback}>{menuItem.label}</button>
+					{/if}
 				</li>
 			{/each}
 		</ul>

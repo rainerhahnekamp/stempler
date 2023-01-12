@@ -38,6 +38,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@auth0/auth0-spa-js": "^2.0.1",
 		"@prisma/client": "^4.8.1",
 		"date-fns": "^2.29.3",
 		"prisma": "^4.8.1",
