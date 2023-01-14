@@ -1,4 +1,17 @@
-<script ✂prettier:content✂="CglpbXBvcnQgJy4uL2FwcC5jc3MnOwoJaW1wb3J0IHthdXRoLCBsb2dpbiwgbG9nb3V0fSBmcm9tICcuLi9hdXRoL2F1dGgudHMnOwoKCWxldCBzaG93TWVudSA9IGZhbHNlOwoKCWxldCBtZW51SXRlbXMgPSBbCgkJe2xhYmVsOiAnSG9tZScsIGxpbms6ICcvJ30sCgkJe2xhYmVsOiAnVGFncycsIGxpbms6ICcvdGFncyd9LAoJCXtsYWJlbDogJ1JlcG9ydHMnLCBsaW5rOiAnL3JlcG9ydHMnfSwKCQl7bGFiZWw6ICdJbXByZXNzdW0nLCBsaW5rOiAnL2ltcHJlc3N1bSd9LAoJCXtsYWJlbDogJ0ZlZWRiYWNrJywgbGluazogJy9mZWVkYmFjayd9CgldOwo=">{}</script>
+<script>
+	import '../app.css';
+	import { auth, login, logout } from '../auth/auth.ts';
+
+	let showMenu = false;
+
+	let menuItems = [
+		{ label: 'Home', link: '/' },
+		{ label: 'Tags', link: '/tags' },
+		{ label: 'Reports', link: '/reports' },
+		{ label: 'Impressum', link: '/impressum' },
+		{ label: 'Feedback', link: '/feedback' }
+	];
+</script>
 
 <nav class="border-b">
 	<div class="container relative max-w-screen-lg mx-auto flex justify-between h-14">
@@ -15,17 +28,17 @@
 			aria-label="Toggle navigation"
 		>
 			<svg
-					class="w-5 h-5"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-					xmlns="http://www.w3.org/2000/svg"
+				class="w-5 h-5"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg"
 			>
 				<path
-						d="M4 6h16M4 12h16M4 18h16"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
+					d="M4 6h16M4 12h16M4 18h16"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
 				/>
 			</svg>
 		</button>
@@ -41,10 +54,10 @@
 					<button on:click={logout}>Logout</button>
 					{#if $auth.profile}
 						<img
-								src={$auth.profile}
-								alt="Profile"
-								class="max-h-12 pl-4"
-								referrerpolicy="no-referrer"
+							src={$auth.profile}
+							alt="Profile"
+							class="max-h-12 pl-4"
+							referrerpolicy="no-referrer"
 						/>
 					{/if}
 				{:else}
@@ -56,7 +69,7 @@
 </nav>
 <div class="container relative max-w-screen-lg mx-auto pt-2">
 	{#if $auth.isReady}
-		<slot/>
+		<slot />
 	{:else}
 		<p>Authenticating...</p>
 	{/if}

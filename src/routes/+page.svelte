@@ -1,7 +1,33 @@
-<script ✂prettier:content✂="CglpbXBvcnQgQ291bnRlciBmcm9tICcuLi9jb21wb25lbnRzL2NvdW50ZXIuc3ZlbHRlJzsKCWltcG9ydCB7Zm9ybWF0RGF0ZX0gZnJvbSAnLi4vZGF0ZS9mb3JtYXQtZGF0ZS50cyc7CglpbXBvcnQge2Zvcm1hdER1cmF0aW9ufSBmcm9tICcuLi9kYXRlL2Zvcm1hdC1kdXJhdGlvbi50cyc7CglpbXBvcnQge01lYXN1cmVtZW50U2VydmljZX0gZnJvbSAnLi4vY2xpZW50L21lYXN1cmVtZW50LXNlcnZpY2UudHMnOwoJaW1wb3J0IHttZWFzdXJlbWVudFNjaGVtYX0gZnJvbSAnLi4vY2xpZW50L21vZGVsL21lYXN1cmVtZW50LnRzJzsKCWltcG9ydCB7bG9naW59IGZyb20gJy4uL2F1dGgvYXV0aC1zZXJ2aWNlLnRzJzsKCWltcG9ydCB7YXV0aH0gZnJvbSAnLi4vYXV0aC9hdXRoLmpzJzsKCglsZXQgbWVhc3VyZW1lbnRzID0gW107Cgljb25zdCBtZWFzdXJlbWVudFNlcnZpY2UgPSBuZXcgTWVhc3VyZW1lbnRTZXJ2aWNlKCk7CgltZWFzdXJlbWVudFNlcnZpY2UuZmluZEFsbCgpLnRoZW4oKHJlY29yZHMpID0+IChtZWFzdXJlbWVudHMgPSByZWNvcmRzKSk7CgoJY29uc3Qgc2F2ZU1lYXN1cmVtZW50ID0gYXN5bmMgKGV2ZW50KSA9PiB7CgkJY29uc3QgZW50cnkgPSBtZWFzdXJlbWVudFNjaGVtYS5wYXJzZSh7aWQ6IDAsIC4uLmV2ZW50LmRldGFpbH0pOwoJCWNvbnN0IG1lYXN1cmVtZW50ID0gYXdhaXQgbWVhc3VyZW1lbnRTZXJ2aWNlLnNhdmVNZWFzdXJlbWVudChlbnRyeSk7CgkJbWVhc3VyZW1lbnRzID0gWy4uLm1lYXN1cmVtZW50cywgbWVhc3VyZW1lbnRdLnNvcnQoKG0xLCBtMikgPT4gbTIuc3RhcnQgLSBtMS5zdGFydCk7Cgl9OwoKCWNvbnN0IHJlbW92ZSA9IGFzeW5jIChpZCkgPT4gewoJCW1lYXN1cmVtZW50cyA9IFsuLi4oYXdhaXQgbWVhc3VyZW1lbnRTZXJ2aWNlLnJlbW92ZShpZCkpXTsKCX07CgoJY29uc3QgcmVzdW1lID0gYXN5bmMgKCkgPT4gewoJCWFsZXJ0KCdub3QgeWV0IGltcGxlbWVudGVkJyk7Cgl9Owo=">{}</script>
+<script>
+	import Counter from '../components/counter.svelte';
+	import { formatDate } from '../date/format-date.ts';
+	import { formatDuration } from '../date/format-duration.ts';
+	import { MeasurementService } from '../client/measurement-service.ts';
+	import { measurementSchema } from '../client/model/measurement.ts';
+	import { login } from '../auth/auth-service.ts';
+	import { auth } from '../auth/auth.js';
+
+	let measurements = [];
+	const measurementService = new MeasurementService();
+	measurementService.findAll().then((records) => (measurements = records));
+
+	const saveMeasurement = async (event) => {
+		const entry = measurementSchema.parse({ id: 0, ...event.detail });
+		const measurement = await measurementService.saveMeasurement(entry);
+		measurements = [...measurements, measurement].sort((m1, m2) => m2.start - m1.start);
+	};
+
+	const remove = async (id) => {
+		measurements = [...(await measurementService.remove(id))];
+	};
+
+	const resume = async () => {
+		alert('not yet implemented');
+	};
+</script>
 
 {#if $auth.username}
-	<Counter on:measured={saveMeasurement}/>
+	<Counter on:measured={saveMeasurement} />
 
 	{#if measurements.length}
 		<h2 class="text-2xl font-bold mt-4 mb-2">Measurements</h2>
