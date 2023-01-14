@@ -5,7 +5,7 @@
 	import { MeasurementService } from '../client/measurement-service.ts';
 	import { measurementSchema } from '../client/model/measurement.ts';
 	import { login } from '../auth/auth-service.ts';
-	import { auth } from '../auth/auth.js';
+	import { auth } from '../auth/auth.ts';
 
 	let measurements = [];
 	const measurementService = new MeasurementService();
