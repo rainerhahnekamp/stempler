@@ -6,19 +6,36 @@ import { currentUser } from './user';
 export const addDataSchema = z.object({
 	name: z.string(),
 	start: z.string(),
-	end: z.string()
+	end: z.string(),
+	tags: z.array(z.string())
 });
 export type AddData = z.infer<typeof addDataSchema>;
 
-export type MeasurementEntity = Prisma.MeasurementGetPayload<Record<string, never>>;
+export type MeasurementEntity = Prisma.MeasurementGetPayload<{
+	include: { tags: { select: { name: true } } };
+}>;
 
 export class MeasurementRepository {
 	client = getPrismaClient();
 
-	add = async (data: AddData) => {
-		return await this.client.measurement.create({
-			data: { ...data, userId: currentUser().id }
+	add = async (addData: AddData) => {
+		const { tags, ...measurement } = addData;
+
+		const entityTags = await this.client.tag.findMany({ where: { name: { in: tags } } });
+		const entityTagNames = entityTags.map((entityTag) => entityTag.name);
+		const newTags = tags
+			.filter((name) => !entityTagNames.includes(name))
+			.map((name) => ({ name, description: '' }));
+
+		const entity = await this.client.measurement.create({
+			data: {
+				...measurement,
+				userId: currentUser().id,
+				tags: { create: newTags, connect: entityTags.map((entity) => ({ id: entity.id })) }
+			}
 		});
+
+		return this.findById(entity.id);
 	};
 
 	delete = async (id: number) => {
@@ -28,18 +45,26 @@ export class MeasurementRepository {
 		}
 	};
 
-	findById = async (id: number) => {
+	findById = async (id: number): Promise<MeasurementEntity> => {
 		const entity = this.client.measurement.findFirst({
-			where: { id, userId: currentUser().id }
+			where: { id, userId: currentUser().id },
+			include: { tags: { select: { name: true } } }
 		});
-		if (!entity) {
+		if (entity == null) {
 			throw new Error('cannot find Measurement with id ' + id);
 		}
-
-		return entity;
+		return entity as unknown as MeasurementEntity;
 	};
 
 	findAll = async () => {
-		return this.client.measurement.findMany({ where: { userId: currentUser().id } });
+		const tags = await this.client.tag.findMany();
+		return this.client.measurement.findMany({
+			where: { userId: currentUser().id },
+			include: { tags: { select: { name: true } } }
+		});
 	};
+
+	isMeasurement(measurement: unknown | null): measurement is MeasurementEntity {
+		return measurement !== null;
+	}
 }

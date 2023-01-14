@@ -9,12 +9,14 @@
 
 	let measurements = [];
 	const measurementService = new MeasurementService();
-	measurementService.findAll().then((records) => (measurements = records));
+	const sorter = (m1, m2) => m2.start - m1.start;
+
+	measurementService.findAll().then((records) => (measurements = records.sort(sorter)));
 
 	const saveMeasurement = async (event) => {
 		const entry = measurementSchema.parse({ id: 0, ...event.detail });
 		const measurement = await measurementService.saveMeasurement(entry);
-		measurements = [...measurements, measurement].sort((m1, m2) => m2.start - m1.start);
+		measurements = [...measurements, measurement].sort(sorter);
 	};
 
 	const remove = async (id) => {
@@ -41,7 +43,7 @@
 			<p class="font-bold">&nbsp;</p>
 			{#each measurements as measurement}
 				<p>{measurement.name}</p>
-				<p>{measurement.tags}</p>
+				<p>{measurement.tags.join(', ')}</p>
 				<p>{formatDate(measurement.start)}</p>
 				<p>{formatDate(measurement.end)}</p>
 				<p>{formatDuration(measurement.start, measurement.end)}</p>

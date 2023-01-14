@@ -6,13 +6,14 @@ const measurementResSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	start: z.string(),
-	end: z.string()
+	end: z.string(),
+	tags: z.array(z.string())
 });
 
 function fromResponse(response: unknown): Measurement {
 	const record = measurementResSchema.parse(response);
-	const { id, name } = record;
-	return { id, name, start: new Date(record.start), end: new Date(record.end) };
+	const { id, name, tags } = record;
+	return { id, name, start: new Date(record.start), end: new Date(record.end), tags };
 }
 
 function fromResponses(responses: unknown[]): Measurement[] {
