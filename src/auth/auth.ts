@@ -65,5 +65,5 @@ export const logout = async () => {
 export const auth = { subscribe };
 
 if (browser) {
-	await getClient();
+	getClient();
 }
