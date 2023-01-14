@@ -16,7 +16,10 @@
 <nav class="border-b">
 	<div class="container relative max-w-screen-lg mx-auto flex justify-between h-14">
 		<a href="/" class="flex items-center cursor-pointer hover:bg-purple-50 px-2 ml-3">
-			<div class="text-gray-700 font-semibold ml-2">Stempler</div>
+			<div class="text-gray-700 font-semibold ml-2 flex items-center">
+				<img src="/logo.png" class="h-12" alt="Stempler" />
+				<p>Stempler</p>
+			</div>
 		</a>
 
 		<button
