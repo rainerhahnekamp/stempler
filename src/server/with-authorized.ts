@@ -14,6 +14,7 @@ export const withAuthorized = async (
 		if (error instanceof JwtParserError) {
 			return new Response(null, { status: 401, statusText: error.message });
 		} else {
+			console.error(error);
 			return new Response(null, { status: 500 });
 		}
 	}
