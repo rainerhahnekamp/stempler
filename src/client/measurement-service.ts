@@ -1,5 +1,6 @@
 import type { Measurement } from './model/measurement';
 import { z } from 'zod';
+import { request } from './request';
 
 const measurementResSchema = z.object({
 	id: z.number(),
@@ -8,26 +9,27 @@ const measurementResSchema = z.object({
 	end: z.string()
 });
 
-type MeasurementRes = z.infer<typeof measurementResSchema>;
+function fromResponse(response: unknown): Measurement {
+	const record = measurementResSchema.parse(response);
+	const { id, name } = record;
+	return { id, name, start: new Date(record.start), end: new Date(record.end) };
+}
 
-function fromResponse(response: MeasurementRes): Measurement {
-	const { id, name } = response;
-	return { id, name, start: new Date(response.start), end: new Date(response.end) };
+function fromResponses(responses: unknown[]): Measurement[] {
+	return responses.map(fromResponse);
 }
 
 export class MeasurementService {
-	saveMeasurement = async (measurement: Measurement) => {
-		const res = await fetch('/api/measurement', {
+	findAll = () => request<unknown[]>('/api/measurement').then(fromResponses);
+
+	saveMeasurement = (measurement: Measurement): Promise<Measurement> => {
+		return request('/api/measurement', {
 			method: 'POST',
 			body: JSON.stringify(measurement)
-		});
-		const response = measurementResSchema.parse(await res.json());
-		return fromResponse(response);
+		}).then(fromResponse);
 	};
 
-	remove = async (id: number): Promise<Measurement[]> => {
-		const response = await fetch(`/api/measurement/${id}`, { method: 'DELETE' });
-		const measureResponses = z.array(measurementResSchema).parse(await response.json());
-		return measureResponses.map(fromResponse);
+	remove = (id: number): Promise<Measurement[]> => {
+		return request<unknown[]>(`/api/measurement/${id}`, { method: 'DELETE' }).then(fromResponses);
 	};
 }

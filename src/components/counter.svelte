@@ -47,7 +47,6 @@
 				name="name"
 				placeholder="name"
 				bind:value={name}
-				autofocus
 			/>
 			<input
 				class="border border-gray-300 focus:outline-blue-400 rounded w-full h-8 p-3 text-sm"
