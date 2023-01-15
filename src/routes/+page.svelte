@@ -33,7 +33,7 @@
 	};
 
 	const resume = async (measurement) => {
-		start(measurement.name, measurement.tags.join(', '));
+		start(measurement.name, measurement.tags.join(' '));
 	};
 </script>
 
@@ -56,7 +56,12 @@
 			<p class="font-bold">&nbsp;</p>
 			{#each measurements as measurement}
 				<p>{measurement.name}</p>
-				<p>{measurement.tags.join(', ')}</p>
+				<div class="flex flex-col flex-wrap content-center gap-y-1">
+					{#each measurement.tags as tag}<span
+							class="py-0.5 px-1 rounded bg-blue-500 text-white text-xs">{tag}</span
+						>
+					{/each}
+				</div>
 				<p>{formatDate(measurement.start)}</p>
 				<p>{formatDate(measurement.end)}</p>
 				<p>{formatDuration(measurement.start, measurement.end)}</p>
