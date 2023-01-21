@@ -1,0 +1,17 @@
+name = "stempler"
+account_id = "e8ced699bfbce90b47f645d24724db11"
+
+main = "./.cloudflare/worker.js"
+site.bucket = "./.cloudflare/public"
+
+build.command = "npm run build"
+
+compatibility_date = "2021-11-12"
+workers_dev = true
+
+[[ d1_databases ]]
+binding = "db" # i.e. available in your Worker on env.DB
+database_name = "stempler"
+database_id = "62f9cac9-d7bf-4070-86a6-c49aef4ffcd1"
+
+preview_database_id = "dfb2e9e3-89c2-4d0b-a376-6a096d1f80bf"
