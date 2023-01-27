@@ -8,6 +8,7 @@
 		{ label: 'Home', link: '/' },
 		{ label: 'Tags', link: '/tags' },
 		{ label: 'Reports', link: '/reports' },
+		{ label: 'Enterprise', link: '/enterprise' },
 		{ label: 'Impressum', link: '/impressum' },
 		{ label: 'Feedback', link: '/feedback' }
 	];
