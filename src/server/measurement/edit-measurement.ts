@@ -1,11 +1,11 @@
 import getTagOperationsForEditing from './intern/get-tag-operations-for-editing';
 import findById from './find-by-id';
 import { getPrismaClient } from '../get-prisma-client';
-import { addDataSchema } from './start-measurement';
+import { addMeasurementSchema } from './start-measurement';
 import { z } from 'zod';
 import findForOverview from './find-for-overview';
 
-export const editMeasurementSchema = addDataSchema.extend({ id: z.number() });
+export const editMeasurementSchema = addMeasurementSchema.extend({ id: z.number() });
 
 export type EditMeasurementData = z.infer<typeof editMeasurementSchema>;
 

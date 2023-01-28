@@ -2,13 +2,16 @@
 	import { createEventDispatcher } from 'svelte';
 	import { formatDuration } from '../date/format-duration.ts';
 
-	export let start = new Date();
-	let now = new Date();
-	let timer = formatDuration(start, now);
+	export let measurement = {
+		id: 0,
+		name: '',
+		tags: '',
+		start: new Date()
+	};
 
-	export let id = 0;
-	export let name = '';
-	export let tags = '';
+	let now = new Date();
+	let timer = formatDuration(measurement.start, now);
+
 	let intervalId = 0;
 
 	const mapTags = (value) => value.split(' ').filter(Boolean);
@@ -16,24 +19,16 @@
 	intervalId = setInterval(() => (now = new Date()), 1000);
 	const finish = () => {
 		clearInterval(intervalId);
-		dispatch('finish', {
-			id,
-			name,
-			tags: mapTags(tags)
-		});
+		dispatch('finish', { ...measurement, tags: mapTags(measurement.tags) });
 	};
 
 	const edit = () => {
-		dispatch('edit', {
-			id,
-			name,
-			tags: mapTags(tags)
-		});
+		dispatch('edit', { ...measurement, tags: mapTags(measurement.tags) });
 	};
 
 	$: {
-		if (start && now) {
-			timer = formatDuration(start, now);
+		if (measurement.start && now) {
+			timer = formatDuration(measurement.start, now);
 		}
 	}
 
@@ -43,10 +38,10 @@
 <p>{timer}</p>
 <form on:submit|preventDefault={edit}>
 	<input type="submit" hidden />
-	<input name="id" bind:value={id} type="hidden" />
+	<input name="id" bind:value={measurement.id} type="hidden" />
 	<div class="flex gap-x-2 items-center">
-		<input class="input" name="name" placeholder="Name" bind:value={name} />
-		<input class="input" name="tags" placeholder="Tags" bind:value={tags} />
+		<input class="input" name="name" placeholder="Name" bind:value={measurement.name} />
+		<input class="input" name="tags" placeholder="Tags" bind:value={measurement.tags} />
 
 		<button class="button-red" on:click={finish} type="button">Finish</button>
 	</div>

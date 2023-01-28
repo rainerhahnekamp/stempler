@@ -3,7 +3,6 @@
 	import { formatDate } from '../date/format-date.ts';
 	import { formatDuration } from '../date/format-duration.ts';
 	import { MeasurementService } from '../client/measurement-service.ts';
-	import { measurementSchema } from '../server/measurement/measurement.ts';
 	import { login } from '../auth/auth-service.ts';
 	import { auth } from '../auth/auth.ts';
 	import MaskInput from 'svelte-input-mask/MaskInput.svelte';
@@ -11,15 +10,11 @@
 	let finishedMeasurements = [];
 	let unfinishedMeasurements = [];
 	let status = 'stopped';
-	let id = 0;
-	let name = '';
-	let tags = '';
-	let start = new Date();
+	let activeMeasurement = { id: 0, name: '', tags: '', start: new Date() };
 	let dataLoaded = false;
 	let editingMeasureId = null;
 
 	const measurementService = new MeasurementService();
-	const sorter = (m1, m2) => m2.start - m1.start;
 
 	const fromTags = (tags) => tags.map((tag) => tag.name).join(' ');
 
@@ -29,16 +24,12 @@
 
 		const { active } = measurementsOverview;
 		if (active) {
-			id = active.id;
+			const { id, name, tags, start } = active;
+			activeMeasurement = { id, name, tags: fromTags(tags), start };
 			status = 'running';
-			name = active.name;
-			tags = fromTags(active.tags);
-			start = active.start;
 		} else {
-			id = 0;
+			activeMeasurement = { id: 0, name: '', tags: '' };
 			status = 'stopped';
-			name = '';
-			tags = '';
 		}
 	};
 
@@ -47,14 +38,12 @@
 		dataLoaded = true;
 	});
 
-	const startMeasurement = async (measurementName = '', measurementTags = '') => {
-		const measurement = await measurementService.start({
+	const start = async (measurementName = '', measurementTags = '') => {
+		const measurementOverview = await measurementService.start({
 			name: measurementName,
 			tags: measurementTags.split(' ')
 		});
-		name = measurement.name;
-		tags = measurement.tags;
-		start = measurement.start;
+		updateMeasurements(measurementOverview);
 		status = 'running';
 	};
 
@@ -73,8 +62,7 @@
 		updateMeasurements(measurementsOverview);
 	};
 
-	const resume = async (measurement) =>
-		startMeasurement(measurement.name, measurement.tags.join(' '));
+	const resume = async (measurement) => start(measurement.name, measurement.tags.join(' '));
 
 	const startEdit = (id) => {
 		editingMeasureId = id;
@@ -87,9 +75,9 @@
 
 {#if $auth.username}
 	{#if status === 'running'}
-		<Counter on:finish={finish} on:edit={edit} {id} {name} {tags} {start} />
+		<Counter on:finish={finish} on:edit={edit} measurement={activeMeasurement} />
 	{:else if dataLoaded}
-		<button class="button-green" on:click={() => startMeasurement()}>Start</button>
+		<button class="button-green" on:click={() => start()}>Start</button>
 	{/if}
 
 	{#if finishedMeasurements.length}

@@ -5,11 +5,11 @@ import { z } from 'zod';
 import findForOverview from './find-for-overview';
 import getOrMakeCurrentUser from '../user/get-or-make-current-user';
 
-export const addDataSchema = z.object({
+export const addMeasurementSchema = z.object({
 	name: z.string(),
 	tags: z.array(z.string())
 });
-export type AddData = z.infer<typeof addDataSchema>;
+export type AddData = z.infer<typeof addMeasurementSchema>;
 
 const startMeasurement = async (addData: AddData) => {
 	const client = getPrismaClient();

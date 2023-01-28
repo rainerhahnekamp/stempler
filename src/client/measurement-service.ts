@@ -32,9 +32,10 @@ function fromResponse(response: unknown): Measurement {
 		tags
 	};
 }
+const sorter = (m1: Measurement, m2: Measurement) => m2.start.getTime() - m1.start.getTime();
 
 function fromResponses(responses: unknown[]): Measurement[] {
-	return responses.map(fromResponse);
+	return responses.map(fromResponse).sort(sorter);
 }
 
 function fromMeasurementsOverview(response: MeasurementOverviewResponse): MeasurementsOverview {
@@ -48,10 +49,13 @@ function fromMeasurementsOverview(response: MeasurementOverviewResponse): Measur
 const baseUrl = '/api/measurement';
 
 export class MeasurementService {
-	start = (startMeasurement: StartMeasurement) =>
-		request(baseUrl, { method: 'PUT', body: JSON.stringify(startMeasurement) });
+	start = (startMeasurement: StartMeasurement): Promise<MeasurementsOverview> =>
+		request<MeasurementOverviewResponse>(baseUrl, {
+			method: 'PUT',
+			body: JSON.stringify(startMeasurement)
+		}).then(fromMeasurementsOverview);
 
-	edit = (measurement: EditMeasurementData) =>
+	edit = (measurement: EditMeasurementData): Promise<MeasurementsOverview> =>
 		request<MeasurementOverviewResponse>(baseUrl, {
 			method: 'PUT',
 			body: JSON.stringify(measurement)
@@ -59,7 +63,7 @@ export class MeasurementService {
 
 	findAll = () => request<MeasurementOverviewResponse>(baseUrl).then(fromMeasurementsOverview);
 
-	finish = (measurement: Measurement) => {
+	finish = (measurement: Measurement): Promise<MeasurementsOverview> => {
 		return request<MeasurementOverviewResponse>(`${baseUrl}/finish`, {
 			method: 'PUT',
 			body: JSON.stringify(measurement)
