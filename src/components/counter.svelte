@@ -32,17 +32,17 @@
 
 <p>{timer}</p>
 <form>
-	<div class="flex">
+	<div class="flex gap-x-2 items-center">
 		<input
-			class="border border-gray-300 focus:outline-blue-400 rounded w-full h-8 p-3 text-sm"
+			class="border border-gray-300 focus:outline-blue-400 rounded w-full h-12 p-3 text-xl"
 			name="name"
-			placeholder="name"
+			placeholder="Name"
 			bind:value={name}
 		/>
 		<input
-			class="border border-gray-300 focus:outline-blue-400 rounded w-full h-8 p-3 text-sm"
+			class="border border-gray-300 focus:outline-blue-400 rounded w-full h-12 p-3 text-xl"
 			name="tags"
-			placeholder="tags"
+			placeholder="Tags"
 			bind:value={tags}
 		/>
 

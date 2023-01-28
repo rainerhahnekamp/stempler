@@ -1,6 +1,6 @@
-import type { MeasurementEntity } from './measurement-repository';
+import type { Measurement } from './measurement/measurement';
 
-export function mapMeasurement(entity: MeasurementEntity) {
+export function mapMeasurement(entity: Measurement) {
 	return {
 		id: entity.id,
 		name: entity.name,

@@ -3,48 +3,78 @@
 	import { formatDate } from '../date/format-date.ts';
 	import { formatDuration } from '../date/format-duration.ts';
 	import { MeasurementService } from '../client/measurement-service.ts';
-	import { measurementSchema } from '../client/model/measurement.ts';
+	import { measurementSchema } from '../server/measurement/measurement.ts';
 	import { login } from '../auth/auth-service.ts';
 	import { auth } from '../auth/auth.ts';
 
-	let measurements = [];
+	let finishedMeasurements = [];
+	let unfinishedMeasurements = [];
 	let status = 'stopped';
 	let name = '';
 	let tags = '';
-	const start = (measurementName = '', measurementTags = '') => {
-		name = measurementName;
-		tags = measurementTags;
-		status = 'running';
-	};
+	let start = new Date();
+
 	const measurementService = new MeasurementService();
 	const sorter = (m1, m2) => m2.start - m1.start;
 
-	measurementService.findAll().then((records) => (measurements = records.sort(sorter)));
+	const toTags = (value) => value.split(' ');
+	const fromTags = (tags) => tags.map((tag) => tag.name).join(' ');
+
+	const updateMeasurements = (measurementsOverview) => {
+		finishedMeasurements = measurementsOverview.finished;
+		unfinishedMeasurements = measurementsOverview.unfinished;
+
+		const { active } = measurementsOverview;
+		if (active) {
+			status = 'running';
+			name = active.name;
+			tags = fromTags(active.tags);
+			start = active.start;
+		} else {
+			status = 'stopped';
+			name = '';
+			tags = '';
+		}
+	};
+
+	measurementService.findAll().then(updateMeasurements);
+
+	const startMeasurement = async (measurementName = '', measurementTags = '') => {
+		const measurement = await measurementService.start({
+			name: measurementName,
+			tags: measurementTags.split(' ')
+		});
+		name = measurement.name;
+		tags = measurement.tags;
+		start = measurement.start;
+		status = 'running';
+	};
 
 	const saveMeasurement = async (event) => {
 		status = 'stopped';
 		const entry = measurementSchema.parse({ id: 0, ...event.detail });
-		const measurement = await measurementService.saveMeasurement(entry);
-		measurements = [...measurements, measurement].sort(sorter);
+		const measurementsOverview = await measurementService.saveMeasurement(entry);
+		updateMeasurements(measurementsOverview);
 	};
 
 	const remove = async (id) => {
-		measurements = [...(await measurementService.remove(id)).sort(sorter)];
+		const measurementsOverview = await measurementService.remove(id);
+		updateMeasurements(measurementsOverview);
 	};
 
 	const resume = async (measurement) => {
-		start(measurement.name, measurement.tags.join(' '));
+		startMeasurement(measurement.name, measurement.tags.join(' '));
 	};
 </script>
 
 {#if $auth.username}
 	{#if status === 'running'}
-		<Counter on:measured={saveMeasurement} {name} {tags} />
+		<Counter on:measured={saveMeasurement} {name} {tags} {start} />
 	{:else}
-		<button class="button-green" on:click={() => start()}>Start</button>
+		<button class="button-green" on:click={() => startMeasurement()}>Start</button>
 	{/if}
 
-	{#if measurements.length}
+	{#if finishedMeasurements.length}
 		<h2 class="text-2xl font-bold mt-4 mb-2">Measurements</h2>
 
 		<div class="grid grid-cols-6 gap-y-1 items-center">
@@ -54,7 +84,7 @@
 			<p class="font-bold">End</p>
 			<p class="font-bold">Duration</p>
 			<p class="font-bold">&nbsp;</p>
-			{#each measurements as measurement}
+			{#each finishedMeasurements as measurement}
 				<p>{measurement.name}</p>
 				<div class="flex flex-col flex-wrap content-center gap-y-1">
 					{#each measurement.tags as tag}<span
