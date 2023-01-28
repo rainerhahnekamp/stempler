@@ -31,5 +31,9 @@
         @apply button bg-red-500 hover:bg-red-600
     }
 
+    .input {
+      @apply border border-gray-300 focus:outline-blue-400 rounded w-full h-12 p-3 text-xl
+    }
+
 
 }

@@ -9,7 +9,7 @@ const finishMeasurement = async (editData: EditMeasurementData) => {
 	const userid = currentUser().id;
 	await editMeasurement(editData);
 	await client.measurement.update({ where: { id: editData.id }, data: { end: new Date() } });
-	await client.user.update({ where: { id: userid }, data: { activeMeasurementId: undefined } });
+	await client.user.update({ where: { id: userid }, data: { activeMeasurementId: null } });
 	return findForOverview();
 };
 
