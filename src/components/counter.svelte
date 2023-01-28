@@ -6,18 +6,29 @@
 	let now = new Date();
 	let timer = formatDuration(start, now);
 
+	export let id = 0;
 	export let name = '';
 	export let tags = '';
 	let intervalId = 0;
 
+	const mapTags = (value) => value.split(' ').filter(Boolean);
+
 	intervalId = setInterval(() => (now = new Date()), 1000);
-	const stop = () => {
+	const finish = () => {
 		clearInterval(intervalId);
-		dispatch('measured', {
+		dispatch('finish', {
+			id,
 			name,
-			tags: tags.split(' '),
-			start,
+			tags: mapTags(tags),
 			end: new Date()
+		});
+	};
+
+	const edit = () => {
+		dispatch('edit', {
+			id,
+			name,
+			tags: mapTags(tags)
 		});
 	};
 
@@ -31,7 +42,9 @@
 </script>
 
 <p>{timer}</p>
-<form>
+<form on:submit|preventDefault={edit}>
+	<input type="submit" hidden />
+	<input name="id" bind:value={id} type="hidden" />
 	<div class="flex gap-x-2 items-center">
 		<input
 			class="border border-gray-300 focus:outline-blue-400 rounded w-full h-12 p-3 text-xl"
@@ -46,6 +59,6 @@
 			bind:value={tags}
 		/>
 
-		<button class="button-red" on:click={stop}>Stop</button>
+		<button class="button-red" on:click={finish} type="button">Finish</button>
 	</div>
 </form>

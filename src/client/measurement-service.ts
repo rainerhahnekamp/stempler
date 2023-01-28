@@ -2,12 +2,14 @@ import { z } from 'zod';
 import { request } from './request';
 import type { MeasurementsOverview } from '../server/measurement/find-for-overview';
 import type { Measurement } from '../server/measurement/measurement';
-import { measurementSchema } from '../server/measurement/measurement';
+import type { EditMeasurementData } from '../server/measurement/edit-measurement';
 
 const startMeasurementSchema = z.object({
 	name: z.string(),
 	tags: z.array(z.string())
 });
+
+type MeasurementOverviewResponse = { active: unknown; finished: unknown[]; unfinished: unknown[] };
 
 const measurementResSchema = z.object({
 	id: z.number(),
@@ -35,11 +37,7 @@ function fromResponses(responses: unknown[]): Measurement[] {
 	return responses.map(fromResponse);
 }
 
-function fromMeasurementsOverview(response: {
-	active: unknown;
-	finished: unknown[];
-	unfinished: unknown[];
-}): MeasurementsOverview {
+function fromMeasurementsOverview(response: MeasurementOverviewResponse): MeasurementsOverview {
 	return {
 		active: response.active === null ? null : fromResponse(response.active),
 		finished: fromResponses(response.finished),
@@ -47,23 +45,28 @@ function fromMeasurementsOverview(response: {
 	};
 }
 
+const baseUrl = '/api/measurement';
+
 export class MeasurementService {
 	start = (startMeasurement: StartMeasurement) =>
-		request('/api/measurement', { method: 'PUT', body: JSON.stringify(startMeasurement) });
+		request(baseUrl, { method: 'PUT', body: JSON.stringify(startMeasurement) });
 
-	findAll = () =>
-		request<{ active: unknown; finished: unknown[]; unfinished: unknown[] }>(
-			'/api/measurement'
-		).then(fromMeasurementsOverview);
-
-	saveMeasurement = (measurement: Measurement): Promise<Measurement> => {
-		return request('/api/measurement', {
+	edit = (measurement: EditMeasurementData) =>
+		request<MeasurementOverviewResponse>(baseUrl, {
 			method: 'PUT',
 			body: JSON.stringify(measurement)
-		}).then(fromResponse);
+		}).then(fromMeasurementsOverview);
+
+	findAll = () => request<MeasurementOverviewResponse>(baseUrl).then(fromMeasurementsOverview);
+
+	finish = (measurement: Measurement) => {
+		return request<MeasurementOverviewResponse>(`${baseUrl}/finish`, {
+			method: 'PUT',
+			body: JSON.stringify(measurement)
+		}).then(fromMeasurementsOverview);
 	};
 
 	remove = (id: number): Promise<Measurement[]> => {
-		return request<unknown[]>(`/api/measurement/${id}`, { method: 'DELETE' }).then(fromResponses);
+		return request<unknown[]>(`${baseUrl}/${id}`, { method: 'DELETE' }).then(fromResponses);
 	};
 }

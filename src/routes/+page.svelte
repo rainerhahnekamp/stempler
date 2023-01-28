@@ -10,14 +10,15 @@
 	let finishedMeasurements = [];
 	let unfinishedMeasurements = [];
 	let status = 'stopped';
+	let id = 0;
 	let name = '';
 	let tags = '';
 	let start = new Date();
+	let dataLoaded = false;
 
 	const measurementService = new MeasurementService();
 	const sorter = (m1, m2) => m2.start - m1.start;
 
-	const toTags = (value) => value.split(' ');
 	const fromTags = (tags) => tags.map((tag) => tag.name).join(' ');
 
 	const updateMeasurements = (measurementsOverview) => {
@@ -26,18 +27,23 @@
 
 		const { active } = measurementsOverview;
 		if (active) {
+			id = active.id;
 			status = 'running';
 			name = active.name;
 			tags = fromTags(active.tags);
 			start = active.start;
 		} else {
+			id = 0;
 			status = 'stopped';
 			name = '';
 			tags = '';
 		}
 	};
 
-	measurementService.findAll().then(updateMeasurements);
+	measurementService.findAll().then((measurementOverview) => {
+		updateMeasurements(measurementOverview);
+		dataLoaded = true;
+	});
 
 	const startMeasurement = async (measurementName = '', measurementTags = '') => {
 		const measurement = await measurementService.start({
@@ -50,10 +56,15 @@
 		status = 'running';
 	};
 
-	const saveMeasurement = async (event) => {
+	const edit = async (event) => {
+		const measurement = event.detail;
+		updateMeasurements(await measurementService.edit(measurement));
+	};
+
+	const finish = async (event) => {
 		status = 'stopped';
 		const entry = measurementSchema.parse({ id: 0, ...event.detail });
-		const measurementsOverview = await measurementService.saveMeasurement(entry);
+		const measurementsOverview = await measurementService.finish(entry);
 		updateMeasurements(measurementsOverview);
 	};
 
@@ -62,15 +73,14 @@
 		updateMeasurements(measurementsOverview);
 	};
 
-	const resume = async (measurement) => {
+	const resume = async (measurement) =>
 		startMeasurement(measurement.name, measurement.tags.join(' '));
-	};
 </script>
 
 {#if $auth.username}
 	{#if status === 'running'}
-		<Counter on:measured={saveMeasurement} {name} {tags} {start} />
-	{:else}
+		<Counter on:finish={finish} on:edit={edit} {id} {name} {tags} {start} />
+	{:else if dataLoaded}
 		<button class="button-green" on:click={() => startMeasurement()}>Start</button>
 	{/if}
 
