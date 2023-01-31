@@ -62,7 +62,8 @@
 		updateMeasurements(measurementsOverview);
 	};
 
-	const resume = async (measurement) => start(measurement.name, measurement.tags.join(' '));
+	const resume = async (measurement) =>
+		start(measurement.name, measurement.tags.map((tag) => tag.name).join(' '));
 
 	const startEdit = (id) => {
 		editingMeasureId = id;
